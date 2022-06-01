@@ -18,22 +18,31 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(),
+      home: const ParallexImage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({
+import 'dart:ui';
+
+import 'package:flutter/material.dart';
+import 'package:sensors_plus/sensors_plus.dart';
+
+class ParallexImage extends StatefulWidget {
+  const ParallexImage({
     Key? key,
+    required this.image, this.height=100, this.width=100,
   }) : super(key: key);
+  final ImageProvider image;
+  final double height;
+  final double width;
+
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<ParallexImage> createState() => _ParallexImageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  String imgUrl = 'assets/4.jpg';
+class _ParallexImageState extends State<ParallexImage> {
   double initX = 0.0, initY = 0.0;
 
   @override
@@ -45,10 +54,12 @@ class _MyHomePageState extends State<MyHomePage> {
               stream: SensorsPlatform.instance.gyroscopeEvents,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  if (snapshot.data!.y.abs() > 0.0)
+                  if (snapshot.data!.y.abs() > 0.0) {
                     initX = initX + (snapshot.data!.y);
-                  if (snapshot.data!.x.abs() > 0.0)
+                  }
+                  if (snapshot.data!.x.abs() > 0.0) {
                     initY = initY + (snapshot.data!.x);
+                  }
                 }
                 return Positioned(
                   left: 10 - initX,
@@ -62,14 +73,14 @@ class _MyHomePageState extends State<MyHomePage> {
                           Padding(
                             padding: const EdgeInsets.all(15.0),
                             child: Container(
-                              width: 230,
-                              height: 330,
+                              width: widget.height,
+                              height: widget.width,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
                                     isAntiAlias: true,
                                     opacity: 0.8,
-                                    image: AssetImage(imgUrl),
-                                    colorFilter: new ColorFilter.mode(
+                                    image: widget.image,
+                                    colorFilter: ColorFilter.mode(
                                         Colors.white.withOpacity(.1),
                                         BlendMode.srcOver),
                                     fit: BoxFit.cover),
@@ -78,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               child: BackdropFilter(
                                 filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
                                 child: Container(
-                                  decoration: new BoxDecoration(
+                                  decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10),
                                       color: Colors.white.withOpacity(0.0)),
                                 ),
@@ -102,8 +113,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 height: 350,
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.white, width: .1),
-                  image: DecorationImage(
-                      image: AssetImage(imgUrl), fit: BoxFit.cover),
+                  image:
+                      DecorationImage(image: widget.image, fit: BoxFit.cover),
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
